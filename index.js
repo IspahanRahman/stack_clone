@@ -1,5 +1,9 @@
 const express=require('express')
 const mongoose=require('mongoose')
+const bcrypt=require('bcryptjs')
+const jsonwt=require('jsonwebtoken')
+const passport=require('passport')
+const key=require('./config_database/database')
 
 //require routes
 const auth=require('./routes/api/auth')
