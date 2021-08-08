@@ -85,7 +85,7 @@ router.post('/login',(req,res)=>{
                     email:person.email
                 }
                jsonwt.sign()
-            }
+            } 
             else{
                 res.json({passwordError:'Password is not correct'})
             }
