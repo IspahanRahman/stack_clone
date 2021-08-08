@@ -1,6 +1,9 @@
 const router=require('express').Router()
 const Person=require('../../models/Person')
-
+const jsonWebTokenStrategy = require('../../security/jsonWebTokenStrategy')
+const jsonwt=require('jsonwebtoken')
+const passport=require('passport')
+const key=require('../../config_database/database')
 
 //@type GET
 //@route /api/auth
@@ -56,4 +59,41 @@ router.post('/register',(req,res)=>{
     })
 })
 
+
+//@type POST
+//@route /api/auth/login
+//@desc it is for login of the user
+//@access Public
+
+router.post('/login',(req,res)=>{
+    const email=req.body.email
+    const passowrd=req.body.password
+
+    Person.findOne({email})
+    .then(person=>{
+        if(!person){
+            return res.status(400).json({emailError:'Email is not found'})
+        }
+        bcrypt.compare(password,person.password)
+        .then(isPassword=>{
+            if(isPassword){
+                // res.json({passwordSuccess:'User successfully logged in'})
+                //use payload and create token for user
+                const payload={
+                    id:person.id,
+                    name:person.name,
+                    email:person.email
+                }
+               jsonwt.sign()
+            }
+            else{
+                res.json({passwordError:'Password is not correct'})
+            }
+        })
+    })
+    .catch(e=>{
+        console.log(e)
+    })
+
+})
 module.exports=router
