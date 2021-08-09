@@ -16,6 +16,10 @@ const app=express()
 //middleware 
 app.use(express.urlencoded({extended:true}))
 app.use(express.json())
+app.use(passport.initialize())
+
+//Config for jwt strategy
+require('./strategies/jsonWebTokenStrategy')(passport)
 
 //mongodb database configuration
 const db=require('./config_database/database').mongoURL
@@ -30,7 +34,7 @@ mongoose
     console.log(e)
 })
 
-
+//routes
 app.get('/',(req,res)=>{
     res.send('Hey buddy this is stackoverflow')
 })
