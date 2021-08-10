@@ -33,17 +33,5 @@ router.post('/register',postRegisterController)
 
 router.post('/login',postLoginController)
 
-//@type GET
-//@route /api/auth/profile
-//@desc it is for profile of the user
-//@access Public
-router.get('/profile',passport.authenticate("jwt",{session:false}),(req,res)=>{
-    // console.log(req.user.email)
-    res.json({
-        name:req.user.name,
-        email:req.user.email,
-        username:req.user.username
-    })
-})
 
 module.exports=router
