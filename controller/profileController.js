@@ -38,8 +38,8 @@ exports.postProfileController=(req,res)=>{
     if(req.body.linkedin){
         profileValues.social.linkedin=req.body.linkedin
     }
-    if(req.body.youtube){
-        profileValues.social.youtube=req.body.youtube
+    if(req.body.instagram){
+        profileValues.social.instagram=req.body.instagram
     }
     if(req.body.facebook){
         profileValues.social.facebook=req.body.facebook
@@ -87,6 +87,82 @@ exports.getProfileUserNameController=(req,res)=>{
         res.json(profile)
     })
     .catch(e=>{
+        console.log(e)
+    })
+}
+
+exports.getEveryoneController=(req,res)=>{
+    Profile.find()
+    .populate("user",["name","profilepic"])
+    .then(profiles=>{
+        if(!profiles){
+            res.status(400).json({usernotfound:"NO profiles were found"})
+        }
+        res.json(profiles)
+    })
+    .catch(e=>{
+        console.log(e)
+    })
+}
+
+exports.deleteController=(req,res)=>{
+    Profile.findOne({user:req.user.id})
+    Profile.findOneAndRemove({user:req.user.id})
+    .then(()=>{
+        Person.findOneAndRemove({_id:req.user.id})
+        .then(()=>{
+            res.json({success:"Deleted user successfully"})
+        })
+        .catch(e=>console.log(e))
+    })
+    .catch(e=>{
+        console.log(e)
+    })
+}
+
+
+exports.postMyworkController=(req,res)=>{
+    Profile.findOne({user:req.user.id})
+    .then(profile=>{
+        if(!profile){
+            return res.json({failure:"Profile not found"})
+        }
+        const newWork={
+            role:req.body.role,
+            company:req.body.company,
+            country:req.body.country,
+            from:req.body.from,
+            to:req.body.to,
+            current:req.body.current,
+            details:req.body.details
+
+        }
+        profile.workrole.push(newWork)
+        profile
+        .save()
+        .then(profile=>res.json(profile))
+        .catch(e=>console.log(e))
+
+    })
+    .catch(e=>{
+        console.log(e)
+    })
+}
+
+exports.deleteWorkroleController=(req,res)=>{
+    Profile.findOne({user:req.user.id})
+    .then(profile=>{
+        if(!profile){
+            return res.json({failure:'Profile not found'})
+        }
+        const removeWorkrole=profile.workrole
+        .map(item=>item.id)
+        .indexOf(req.params.w_id)
+        profile.workrole.splice(removeWorkrole,1)
+        profile.save().then(profile=>res.json(profile))
+        .catch(e=>console.log(e))
+
+    }).catch(e=>{
         console.log(e)
     })
 }
